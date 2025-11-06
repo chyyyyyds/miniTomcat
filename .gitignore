@@ -1,0 +1,17 @@
+.idea/
+.settings/
+.classpath
+.project
+.properties
+*.iml
+
+*.class
+target/
+.mvn
+mvnw
+mvnw.cmd
+
+jxstjh_checkstyle.xml
+jxstjh_code_scheme_idea.xml
+
+logs/
