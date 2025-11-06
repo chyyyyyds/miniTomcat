@@ -9,11 +9,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HttpServer {
-    public static final String WEB_ROOT = System.getProperty("user.dir") +  File.separator + File.separator + "webroot";
+    public static final String WEB_ROOT = System.getProperty("user.dir") + File.separator + File.separator + "webroot";
+
     public static void main(String[] args) {
         HttpServer server = new HttpServer();
         server.await();
     }
+
     public void await() { //服务器循环等待请求并处理
         ServerSocket serverSocket = null;
         int port = 8080;
@@ -37,7 +39,15 @@ public class HttpServer {
                 // create Response object
                 Response response = new Response(output);
                 response.setRequest(request);
-                response.sendStaticResource();
+
+                if (request.getUri().startsWith("/servlet/")) {
+                    ServletProcessor processor = new ServletProcessor();
+                    processor.process(request, response);
+                } else {
+                    StaticResourceProcessor processor = new StaticResourceProcessor();
+                    processor.process(request, response);
+                }
+//                response.sendStaticResource();
                 // close the socket
                 socket.close();
             } catch (Exception e) {

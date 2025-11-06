@@ -15,6 +15,8 @@ public class Response {
     public void setRequest(Request request) {
         this.request = request;
     }
+
+    public OutputStream getOutput() { return this.output; }
     public void sendStaticResource() throws IOException {
         byte[] bytes = new byte[BUFFER_SIZE];
         FileInputStream fis = null;
