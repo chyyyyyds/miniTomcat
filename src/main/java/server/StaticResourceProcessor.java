@@ -1,7 +1,6 @@
 package server;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
-import server.HttpServer;
 
 import java.io.File;
 import java.io.FileInputStream;
