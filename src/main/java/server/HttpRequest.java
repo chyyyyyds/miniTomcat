@@ -27,10 +27,22 @@ public class HttpRequest implements HttpServletRequest {
     HttpSession session;
     String sessionid;
     SessionFacade sessionFacade;
+    private HttpResponse response;
+
+    public HttpRequest() {
+    }
 
     public HttpRequest(InputStream input) {
         this.input = input;
         this.sis = new SocketInputStream(this.input, 2048);
+    }
+
+    public void setStream(InputStream input) {
+        this.input = input;
+        this.sis = new SocketInputStream(this.input, 2048);
+    }
+    public void setResponse(HttpResponse response) {
+        this.response = response;
     }
 
     public void parse(Socket socket) {
@@ -52,17 +64,19 @@ public class HttpRequest implements HttpServletRequest {
         if (question >= 0) {
             queryString = new String(requestLine.uri, question + 1, requestLine.uriEnd - question - 1);
             uri = new String(requestLine.uri, 0, question);
-            int semicolon = uri.indexOf(DefaultHeaders.JSESSIONID_NAME);
+            String tmp = ";" + DefaultHeaders.JSESSIONID_NAME + "=";
+            int semicolon = uri.indexOf(tmp);
             if (semicolon >= 0) {
-                sessionid = uri.substring(semicolon+DefaultHeaders.JSESSIONID_NAME.length());
+                sessionid = uri.substring(semicolon+tmp.length());
                 uri = uri.substring(0, semicolon);
             }
         } else {
             queryString = null;
             uri = new String(requestLine.uri, 0, requestLine.uriEnd);
-            int semicolon = uri.indexOf(DefaultHeaders.JSESSIONID_NAME);
+            String tmp = ";" + DefaultHeaders.JSESSIONID_NAME + "=";
+            int semicolon = uri.indexOf(tmp);
             if (semicolon >= 0) {
-                sessionid = uri.substring(semicolon+DefaultHeaders.JSESSIONID_NAME.length());
+                sessionid = uri.substring(semicolon+tmp.length());
                 uri = uri.substring(0, semicolon);
             }
         }
@@ -86,6 +100,7 @@ public class HttpRequest implements HttpServletRequest {
             }
             String name = new String(header.name,0,header.nameEnd);
             String value = new String(header.value, 0, header.valueEnd);
+            name = name.toLowerCase();
             // Set the corresponding request headers
             if (name.equals(DefaultHeaders.ACCEPT_LANGUAGE_NAME)) {
                 headers.put(name, value);
@@ -97,6 +112,9 @@ public class HttpRequest implements HttpServletRequest {
                 headers.put(name, value);
             } else if (name.equals(DefaultHeaders.CONNECTION_NAME)) {
                 headers.put(name, value);
+                if (value.equals("close")) {
+                    response.setHeader("Connection", "close");
+                }
             } else if (name.equals(DefaultHeaders.TRANSFER_ENCODING_NAME)) {
                 headers.put(name, value);
             } else if (name.equals(DefaultHeaders.COOKIE_NAME)) {
