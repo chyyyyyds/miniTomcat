@@ -34,11 +34,11 @@ public class HttpProcessor implements Runnable{
     }
 
     public void process(Socket socket) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(100);
+//        } catch (InterruptedException e1) {
+//            e1.printStackTrace();
+//        }
         InputStream input = null;
         OutputStream output = null;
         try {

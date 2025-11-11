@@ -1,9 +1,11 @@
 package server;
 
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SocketInputStream extends InputStream {
+public class SocketInputStream extends ServletInputStream {
     private static final byte CR = (byte) '\r';
     private static final byte LF = (byte) '\n';
     private static final byte SP = (byte) ' ';
@@ -22,9 +24,12 @@ public class SocketInputStream extends InputStream {
         buf = new byte[bufferSize];
     }
 
+
+    /**
+     * 读取请求行如 GET /index.html HTTP/1.1
+     */
     public void readRequestLine(HttpRequestLine requestLine)
             throws IOException {
-
         int chr = 0;
         do {
             try {
@@ -54,7 +59,10 @@ public class SocketInputStream extends InputStream {
             readCount++;
             pos++;
         }
+
         requestLine.methodEnd = readCount - 1;
+
+        // Reading URI
         maxRead = requestLine.uri.length;
         readStart = pos;
         readCount = 0;
@@ -62,7 +70,9 @@ public class SocketInputStream extends InputStream {
         space = false;
 
         boolean eol = false;
+
         while (!space) {
+            // We're at the end of the internal buffer
             if (pos >= count) {
                 int val = read();
                 if (val == -1)
@@ -79,12 +89,17 @@ public class SocketInputStream extends InputStream {
         }
 
         requestLine.uriEnd = readCount - 1;
+
+        // Reading protocol
         maxRead = requestLine.protocol.length;
         readStart = pos;
         readCount = 0;
 
         while (!eol) {
+            // We're at the end of the internal buffer
             if (pos >= count) {
+                // Copying part (or all) of the internal buffer to the line
+                // buffer
                 int val = read();
                 if (val == -1)
                     throw new IOException("requestStream.readline.error");
@@ -106,7 +121,7 @@ public class SocketInputStream extends InputStream {
     }
 
     public void readHeader(HttpHeader header)
-            throws IOException {
+        throws IOException {
 
         int chr = read();
         if ((chr == CR) || (chr == LF)) { // Skipping CR
@@ -254,5 +269,20 @@ public class SocketInputStream extends InputStream {
         if (nRead > 0) {
             count = nRead;
         }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
+
     }
 }
