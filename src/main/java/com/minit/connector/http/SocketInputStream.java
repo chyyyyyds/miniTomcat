@@ -1,4 +1,7 @@
-package server;
+package com.minit.connector.http;
+
+import com.minit.connector.http.HttpHeader;
+import com.minit.connector.http.HttpRequestLine;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -24,10 +27,6 @@ public class SocketInputStream extends ServletInputStream {
         buf = new byte[bufferSize];
     }
 
-
-    /**
-     * 读取请求行如 GET /index.html HTTP/1.1
-     */
     public void readRequestLine(HttpRequestLine requestLine)
             throws IOException {
         int chr = 0;

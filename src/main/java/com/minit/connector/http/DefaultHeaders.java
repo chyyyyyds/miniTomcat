@@ -1,4 +1,4 @@
-package server;
+package com.minit.connector.http;
 
 public class DefaultHeaders {
     static final String HOST_NAME = "host";
@@ -7,6 +7,6 @@ public class DefaultHeaders {
     static final String CONTENT_LENGTH_NAME = "content-length";
     static final String CONTENT_TYPE_NAME = "content-type";
     static final String TRANSFER_ENCODING_NAME = "transfer-encoding";
-    static final String COOKIE_NAME = "Cookie";
+    static final String COOKIE_NAME = "cookie";
     static final String JSESSIONID_NAME = "jsessionid";
 }
